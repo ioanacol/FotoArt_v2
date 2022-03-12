@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ public class LogInActivity extends AppCompatActivity {
     String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
     FirebaseAuth mAuth;
     FirebaseUser mUser;
+    UserDAO userDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,7 @@ public class LogInActivity extends AppCompatActivity {
         setContentView(R.layout.log_in_activity);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 
-        textView=findViewById(R.id.register);
+        textView = findViewById(R.id.register);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,15 +82,15 @@ public class LogInActivity extends AppCompatActivity {
         String email = textEmail.getText().toString();
         String password = textParola.getText().toString();
 
-        if(!email.matches(emailPattern)) {
+        if (!email.matches(emailPattern)) {
             textEmail.setError("Invalid!");
-        } else if(password.isEmpty() || password.length() < 6){
+        } else if (password.isEmpty() || password.length() < 6) {
             textParola.setError("Invalid!");
         } else {
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         Intent i = new Intent(LogInActivity.this, EditPage.class);
                         startActivity(i);
                     } else {
@@ -105,15 +107,25 @@ public class LogInActivity extends AppCompatActivity {
 
         textEmail = findViewById(R.id.email);
         textParola = findViewById(R.id.password);
-        if(requestCode==MainActivityRequestCode){
-            if(resultCode==RESULT_OK){
-                if(data!=null){
+        if (requestCode == MainActivityRequestCode) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
                     Bundle bundle = data.getBundleExtra("userbundle");
                     User user = (bundle.getParcelable("OK"));
-                    users.add(user);
-                    writeToDatabase(users);
                     textEmail.setText(user.getEmail());
                     textParola.setText(user.getPassword());
+
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            userDAO = DatabaseAccess.getInstance(LogInActivity.this).getDatabase().utilizatorDAO();
+                            userDAO.insertAll(user);
+                            users = userDAO.getAll();
+                           // writeToDatabase(users);
+                        }
+                    });
+
+                    thread.start();
                 }
             }
         }
@@ -125,10 +137,10 @@ public class LogInActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
-    private void writeToDatabase(List<User> users){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("users");
-
-        myRef.setValue(users);
-    }
+//    private void writeToDatabase(List<User> users) {
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("users");
+//
+//        myRef.setValue(users);
+//    }
 }

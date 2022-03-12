@@ -3,10 +3,21 @@ package com.example.fotoart_v2;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "User")
 public class User implements Parcelable {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+    @ColumnInfo(name = "first_name")
     private String firstName;
+    @ColumnInfo(name = "last_name")
     private String lastName;
+    @ColumnInfo(name = "email")
     private String email;
+    @ColumnInfo(name = "password")
     private String password;
 
     public User() {
@@ -37,6 +48,14 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getFirstName() {
         return firstName;

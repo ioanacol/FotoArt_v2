@@ -26,6 +26,8 @@ public class MyProfile extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     List<User> firebaseList = new ArrayList<>();
+    UserDAO userDAO;
+    List<User> listDB = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,8 @@ public class MyProfile extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
         textEmail.setText(firebaseUser.getEmail());
 
-        readFromDatabase();
+        // readFromDatabase();
+        readNameDB();
 
         textSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +75,7 @@ public class MyProfile extends AppCompatActivity {
         FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if(firebaseAuth.getCurrentUser() == null){
+                if (firebaseAuth.getCurrentUser() == null) {
                     Intent i = new Intent(MyProfile.this, LogInActivity.class);
                     startActivity(i);
                 } else {
@@ -85,30 +88,48 @@ public class MyProfile extends AppCompatActivity {
         firebaseAuth.signOut();
     }
 
-    private void readFromDatabase(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("users");
-        myRef.addValueEventListener(new ValueEventListener() {
+    private void readNameDB() {
+        Thread thread = new Thread(new Runnable() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-                    User user = postSnapshot.getValue(User.class);
-                    firebaseList.add(user);
-                }
-
-                for(int i=0; i<firebaseList.size(); i++){
-                    if(firebaseUser.getEmail().equals(firebaseList.get(i).getEmail())) {
-                        String name = firebaseList.get(i).getFirstName() + " " + firebaseList.get(i).getLastName();
+            public void run() {
+                userDAO = DatabaseAccess.getInstance(MyProfile.this).getDatabase().utilizatorDAO();
+                listDB = userDAO.getAll();
+                for (int i = 0; i < listDB.size(); i++) {
+                    if (firebaseUser.getEmail().equals(listDB.get(i).getEmail())) {
+                        String name = listDB.get(i).getFirstName() + " " + listDB.get(i).getLastName();
                         textName.setText(name);
                     }
                 }
             }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("User", "Failed to read value.", error.toException());
-            }
         });
+
+        thread.start();
     }
+
+//    private void readFromDatabase(){
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("users");
+//        myRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+//                    User user = postSnapshot.getValue(User.class);
+//                    firebaseList.add(user);
+//                }
+//
+//                for(int i=0; i<firebaseList.size(); i++){
+//                    if(firebaseUser.getEmail().equals(firebaseList.get(i).getEmail())) {
+//                        String name = firebaseList.get(i).getFirstName() + " " + firebaseList.get(i).getLastName();
+//                        textName.setText(name);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                // Failed to read value
+//                Log.w("User", "Failed to read value.", error.toException());
+//            }
+//        });
+//    }
 }
