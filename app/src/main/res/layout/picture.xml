@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <Button
+        android:id="@+id/btnGallery"
+        android:layout_width="415dp"
+        android:layout_height="80dp"
+        android:background="@color/white"
+        android:drawableStart="@drawable/ic_baseline_photo_size_select_actual_24"
+        android:fontFamily="@font/old_standard_tt"
+        android:gravity="fill_horizontal|left|fill_vertical"
+        android:padding="10dp"
+        android:text="  Choose from gallery"
+        android:textColor="@android:color/darker_gray">
+
+    </Button>
+
+    <Button
+        android:id="@+id/btnCamera"
+        android:layout_width="415dp"
+        android:layout_height="80dp"
+        android:background="@color/white"
+        android:drawableStart="@drawable/ic_baseline_photo_camera_24"
+        android:fontFamily="@font/old_standard_tt"
+        android:gravity="center_horizontal|left|fill_vertical"
+        android:padding="10dp"
+        android:text="  Take picture"
+        android:textColor="@android:color/darker_gray">
+
+    </Button>
+
+</LinearLayout>

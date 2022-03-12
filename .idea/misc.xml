@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable-v24/ic_baseline_photo_camera_24.xml" value="0.19114583333333332" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable-v24/ic_baseline_photo_size_select_actual_24.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/border.xml" value="0.2625" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/email.xml" value="0.2625" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_baseline_file_open_24.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_baseline_flare_24.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_baseline_login_24.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_baseline_photo_filter_24.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_baseline_photo_library_24.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_baseline_save_alt_24.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_baseline_undo_24.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_launcher_background.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_menu_camera.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/password.xml" value="0.2625" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/drawable/side_nav_bar.xml" value="0.13125" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/font/old_standard_tt.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/activity_sign_up.xml" value="0.24635416666666668" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/content_edit_photo.xml" value="0.1375" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/edit_page_actvity.xml" value="0.13385416666666666" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/edit_photo_activity.xml" value="0.1375" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/first_activity.xml" value="0.24635416666666668" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/header_navigation_drawer.xml" value="0.4" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/log_in_activity.xml" value="0.2" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/my_photos_activity.xml" value="0.11510416666666666" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/my_profile_activity.xml" value="0.264" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/nav_header_edit_photo.xml" value="0.11510416666666666" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/open_new_picture.xml" value="0.175" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/picture.xml" value="0.175" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/revert_to_initial_photo.xml" value="0.175" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/save_activity.xml" value="0.33204134366925064" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/second_activity.xml" value="0.264" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/layout/sign_up_activity.xml" value="0.11510416666666666" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.24635416666666668" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/menu/edit_photo.xml" value="0.1375" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/menu/edit_photo_activity_drawer.xml" value="0.1375" />
+        <entry key="..\:/Users/ioana/OneDrive/Desktop/anul 3 sem I/Licenta/FotoArtv2/app/src/main/res/menu/navigation_drawer.xml" value="0.2" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

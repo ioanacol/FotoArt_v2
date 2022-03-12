@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".SaveActivity">
+
+
+    <ImageView
+        android:id="@+id/finalPhoto"
+        android:layout_width="400dp"
+        android:layout_height="550dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/white" />
+
+    <Button
+        android:id="@+id/btnSaveGallery"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="580dp"
+        android:background="#ce7c30"
+        android:fontFamily="@font/old_standard_tt"
+        android:text="Save to gallery"
+        android:textColor="#090d01"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnDone"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="12dp"
+        android:background="#ce7c30"
+        android:fontFamily="@font/old_standard_tt"
+        android:text="Done"
+        android:textColor="#090d01"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBack" />
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="12dp"
+        android:background="#ce7c30"
+        android:fontFamily="@font/old_standard_tt"
+        android:text="Edit new photo"
+        android:textColor="#090d01"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnSaveGallery" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

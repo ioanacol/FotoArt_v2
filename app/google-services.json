@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "517508572720",
+    "project_id": "fotoartdb",
+    "storage_bucket": "fotoartdb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:517508572720:android:6a8e1cfe229ad922feaff5",
+        "android_client_info": {
+          "package_name": "com.example.fotoart_v2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "517508572720-32bhtohb65421dl66trck9ieoeve4h53.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANiRwoNHjRv79PIjGDGomyE7csBG5ibSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "517508572720-32bhtohb65421dl66trck9ieoeve4h53.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
