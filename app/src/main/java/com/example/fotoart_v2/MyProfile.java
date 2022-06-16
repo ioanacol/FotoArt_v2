@@ -45,7 +45,6 @@ public class MyProfile extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
         textEmail.setText(firebaseUser.getEmail());
 
-        // readFromDatabase();
         readNameDB();
 
         textSignOut.setOnClickListener(new View.OnClickListener() {
@@ -105,31 +104,4 @@ public class MyProfile extends AppCompatActivity {
 
         thread.start();
     }
-
-//    private void readFromDatabase(){
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference("users");
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-//                    User user = postSnapshot.getValue(User.class);
-//                    firebaseList.add(user);
-//                }
-//
-//                for(int i=0; i<firebaseList.size(); i++){
-//                    if(firebaseUser.getEmail().equals(firebaseList.get(i).getEmail())) {
-//                        String name = firebaseList.get(i).getFirstName() + " " + firebaseList.get(i).getLastName();
-//                        textName.setText(name);
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                // Failed to read value
-//                Log.w("User", "Failed to read value.", error.toException());
-//            }
-//        });
-//    }
 }

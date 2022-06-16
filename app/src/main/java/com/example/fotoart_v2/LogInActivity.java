@@ -121,7 +121,6 @@ public class LogInActivity extends AppCompatActivity {
                             userDAO = DatabaseAccess.getInstance(LogInActivity.this).getDatabase().utilizatorDAO();
                             userDAO.insertAll(user);
                             users = userDAO.getAll();
-                           // writeToDatabase(users);
                         }
                     });
 
@@ -136,11 +135,4 @@ public class LogInActivity extends AppCompatActivity {
         super.onResume();
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
-
-//    private void writeToDatabase(List<User> users) {
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference("users");
-//
-//        myRef.setValue(users);
-//    }
 }
