@@ -25,7 +25,6 @@ public class MyProfile extends AppCompatActivity {
     TextView textName, textEmail, textMyPhotos, textSignOut;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
-    List<User> firebaseList = new ArrayList<>();
     UserDAO userDAO;
     List<User> listDB = new ArrayList<>();
 

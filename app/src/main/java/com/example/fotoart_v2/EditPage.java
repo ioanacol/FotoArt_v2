@@ -4,6 +4,7 @@ import static com.amazonaws.regions.Regions.EU_WEST_1;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -14,9 +15,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -34,7 +37,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,10 +70,6 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -81,7 +82,6 @@ public class EditPage extends AppCompatActivity {
     TextView save, open, myProfile;
     Bitmap imageOriginal;
     Bitmap image;
-    TabLayout tabLayout;
     SeekBar sb_value;
     Uri cropImage;
 
@@ -92,7 +92,6 @@ public class EditPage extends AppCompatActivity {
     private static final String ACCESS_KEY = "AKIA3XE3HF7SVYZTRKLQ";
     private static final String SECRET_KEY = "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";
 
-    private static final int REQUEST_GALLERY = 100;
     private static final int CHECK_RESULT_INTERVAL_IN_MS = 2500;
     private static final int IMAGE_MAX_SIDE_LENGTH = 768;
 
@@ -116,7 +115,7 @@ public class EditPage extends AppCompatActivity {
 
         mActivity = this;
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 4, GridLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         ApiClientFactory factory = new ApiClientFactory()
@@ -134,7 +133,6 @@ public class EditPage extends AppCompatActivity {
 
         deepArtEffectsClient = factory.build(DeepArtEffectsClient.class);
 
-        // tabLayout = findViewById(R.id.tabLayout);
         sb_value = (SeekBar) findViewById(R.id.seekBar);
         sb_value.setProgress(50);
 
@@ -155,7 +153,6 @@ public class EditPage extends AppCompatActivity {
         open.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              //  tabLayout.setVisibility(View.INVISIBLE);
                 sb_value.setVisibility(View.INVISIBLE);
                 openNewPicture();
             }
@@ -164,7 +161,6 @@ public class EditPage extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              //  tabLayout.setVisibility(View.INVISIBLE);
                 sb_value.setVisibility(View.INVISIBLE);
                 BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
                 Bitmap bitmap = draw.getBitmap();
@@ -189,25 +185,20 @@ public class EditPage extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.crop:
-                      //  tabLayout.setVisibility(View.INVISIBLE);
                         sb_value.setVisibility(View.INVISIBLE);
-                        startCropActivity(image);
+                        startCropActivity();
                         return true;
 
                     case R.id.effects:
-//                        tabLayout.setVisibility(View.VISIBLE);
-//                        sb_value.setVisibility(View.INVISIBLE);
                         loadingStyles();
                         return true;
 
                     case R.id.exposure:
                         sb_value.setVisibility(View.VISIBLE);
-                       // tabLayout.setVisibility(View.INVISIBLE);
                         changeBrightness();
                         return true;
 
                     case R.id.revert:
-                      //  tabLayout.setVisibility(View.INVISIBLE);
                         sb_value.setVisibility(View.INVISIBLE);
                         revertToOriginalPhoto();
                         return true;
@@ -215,19 +206,6 @@ public class EditPage extends AppCompatActivity {
                 return false;
             }
         });
-
-//        sb_value.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//
-//                int val = (progress * (seekBar.getWidth() - 2 * seekBar.getThumbOffset())) / seekBar.getMax();
-//                textView.setText("" + progress);
-//                textView.setX(seekBar.getX() + val + seekBar.getThumbOffset() / 2);
-//                //textView.setY(100); just added a value set this properly using screen with height aspect ratio , if you do not set it by default it will be there below seek bar
-//
-//            }
-//        });
-
     }
 
     private void changeBrightness() {
@@ -264,7 +242,6 @@ public class EditPage extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-       // tabLayout.setVisibility(View.INVISIBLE);
     }
 
     private void choosePicture() {
@@ -287,7 +264,6 @@ public class EditPage extends AppCompatActivity {
             public void onClick(View v) {
                 takePictureFromGallery();
                 alertDialog.cancel();
-                imageView.setClickable(false);
             }
         });
 
@@ -380,9 +356,21 @@ public class EditPage extends AppCompatActivity {
         });
     }
 
-    private void startCropActivity(Bitmap image) {
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
+    private void startCropActivity() {
+        BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
+        Bitmap bitmap = draw.getBitmap();
+        cropImage = getImageUri(getApplicationContext(), bitmap);
         CropImage.activity(cropImage)
                 .start(this);
+        image = ImageHelper.loadSizeLimitedBitmapFromUri(cropImage,
+                this.getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
     }
 
     @Override
@@ -391,12 +379,10 @@ public class EditPage extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
-                    imageOriginal =  ImageHelper.loadSizeLimitedBitmapFromUri(data.getData(),
+                    imageOriginal = ImageHelper.loadSizeLimitedBitmapFromUri(data.getData(),
                             this.getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
-                    image =  ImageHelper.loadSizeLimitedBitmapFromUri(data.getData(),
+                    image = ImageHelper.loadSizeLimitedBitmapFromUri(data.getData(),
                             this.getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
-                    cropImage = data.getData();
-
                     imageView.setImageBitmap(image);
                 }
                 break;
@@ -412,8 +398,10 @@ public class EditPage extends AppCompatActivity {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-                image = result.getBitmap();
-                imageView.setImageBitmap(image);
+                cropImage = result.getUri();
+                imageView.setImageURI(cropImage);
+                image = ImageHelper.loadSizeLimitedBitmapFromUri(cropImage,
+                        this.getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
@@ -537,13 +525,13 @@ public class EditPage extends AppCompatActivity {
     }
 
     private class ImageReadyCheckTimer extends TimerTask {
+
         private final String mSubmissionId;
 
         ImageReadyCheckTimer(String submissionId) {
             mSubmissionId = String.valueOf(submissionId);
         }
 
-        @Override
         public void run() {
             try {
                 final Result result = deepArtEffectsClient.resultGet(mSubmissionId);
@@ -571,8 +559,6 @@ public class EditPage extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-//                BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
-//                Bitmap bitmap = draw.getBitmap();
                 UploadRequest uploadRequest = new UploadRequest();
                 uploadRequest.setStyleId(styleId);
                 uploadRequest.setImageBase64Encoded(convertBitmapToBase64(image));
@@ -594,10 +580,9 @@ public class EditPage extends AppCompatActivity {
     }
 
 
-    public boolean checkPermission(String permission, int requestCode)
-    {
+    public boolean checkPermission(String permission, int requestCode) {
         if (ContextCompat.checkSelfPermission(EditPage.this, permission) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(EditPage.this, new String[] { permission }, requestCode);
+            ActivityCompat.requestPermissions(EditPage.this, new String[]{permission}, requestCode);
         }
         return false;
     }
@@ -605,8 +590,7 @@ public class EditPage extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
-                                           @NonNull int[] grantResults)
-    {
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == CAMERA_PERMISSION_CODE) {
@@ -614,8 +598,7 @@ public class EditPage extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 Toast.makeText(EditPage.this, "Camera Permission Granted", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 Toast.makeText(EditPage.this, "Camera Permission Denied", Toast.LENGTH_SHORT).show();
             }
         }
