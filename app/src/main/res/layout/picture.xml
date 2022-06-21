@@ -19,18 +19,4 @@
 
     </Button>
 
-    <Button
-        android:id="@+id/btnCamera"
-        android:layout_width="415dp"
-        android:layout_height="80dp"
-        android:background="@color/white"
-        android:drawableStart="@drawable/ic_baseline_photo_camera_24"
-        android:fontFamily="@font/old_standard_tt"
-        android:gravity="center_horizontal|left|fill_vertical"
-        android:padding="10dp"
-        android:text="  Take picture"
-        android:textColor="@android:color/darker_gray">
-
-    </Button>
-
 </LinearLayout>

@@ -47,7 +47,7 @@ public class SaveActivity extends AppCompatActivity {
 
         imageView = findViewById(R.id.finalPhoto);
 
-        new DownloadImageTask(imageView) .execute(imageURl);
+        new DownloadImageTask(imageView).execute(imageURl);
 
         btnSaveGallery = findViewById(R.id.btnSaveGallery);
         btnSaveGallery.setOnClickListener(new View.OnClickListener() {

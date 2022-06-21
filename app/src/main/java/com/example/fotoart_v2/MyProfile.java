@@ -1,14 +1,24 @@
 package com.example.fotoart_v2;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -22,10 +32,11 @@ import java.util.List;
 
 public class MyProfile extends AppCompatActivity {
 
-    TextView textName, textEmail, textMyPhotos, textSignOut;
+    TextView textName, textEmail, textMyPhotos, textSignOut, textChangePassword;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     UserDAO userDAO;
+    ProgressDialog loadingBar;
     List<User> listDB = new ArrayList<>();
 
     @Override
@@ -39,6 +50,7 @@ public class MyProfile extends AppCompatActivity {
         textEmail = findViewById(R.id.textEmailAddress);
         textMyPhotos = findViewById(R.id.textMyPhotos);
         textSignOut = findViewById(R.id.textSignOut);
+        textChangePassword = findViewById(R.id.textChangePassword);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -58,6 +70,30 @@ public class MyProfile extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MyProfile.this, MyPhotos.class);
                 startActivity(i);
+            }
+        });
+
+        textChangePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadingBar = new ProgressDialog(MyProfile.this);
+                loadingBar.setMessage("Sending Email....");
+                loadingBar.setCanceledOnTouchOutside(false);
+                loadingBar.show();
+
+                FirebaseAuth.getInstance().sendPasswordResetEmail(firebaseUser.getEmail())
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    loadingBar.dismiss();
+                                    Toast.makeText(MyProfile.this, "Email sent!", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    loadingBar.dismiss();
+                                    Toast.makeText(MyProfile.this, "Error Occurred!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
             }
         });
     }

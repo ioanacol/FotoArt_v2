@@ -60,7 +60,7 @@
         android:fontFamily="@font/old_standard_tt"
         android:padding="5dp"
         android:drawableTint="#ce7c30"
-        android:text="My photos"
+        android:text="Photos"
         android:textSize="25dp"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
@@ -84,6 +84,25 @@
         android:textSize="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.118"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textMyPhotos" />
+
+    <TextView
+        android:id="@+id/textChangePassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="76dp"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_baseline_lock_open_24"
+        android:drawablePadding="7dp"
+        android:drawableTint="#ce7c30"
+        android:fontFamily="@font/old_standard_tt"
+        android:padding="5dp"
+        android:text="Change password"
+        android:textColor="@color/black"
+        android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.183"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textMyPhotos" />
 

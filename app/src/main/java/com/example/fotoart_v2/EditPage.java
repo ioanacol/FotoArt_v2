@@ -27,6 +27,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -70,6 +71,11 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -78,12 +84,14 @@ public class EditPage extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
     ImageView imageView;
-    Button btnGallery, btnCamera;
+    Button btnGallery;
     TextView save, open, myProfile;
     Bitmap imageOriginal;
     Bitmap image;
     SeekBar sb_value;
     Uri cropImage;
+    ProgressBar progressBar;
+    String imageRecyclerView;
 
 
     private static final String TAG = EditPage.class.getSimpleName();
@@ -117,6 +125,9 @@ public class EditPage extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 4, GridLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        progressBar = findViewById(R.id.progress);
+        progressBar.setVisibility(View.GONE);
 
         ApiClientFactory factory = new ApiClientFactory()
                 .apiKey(API_KEY)
@@ -158,13 +169,14 @@ public class EditPage extends AppCompatActivity {
             }
         });
 
+        putImage();
+
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sb_value.setVisibility(View.INVISIBLE);
                 BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
                 Bitmap bitmap = draw.getBitmap();
-
                 UploadBitmap(EditPage.this, bitmap, UUID.randomUUID().toString());
             }
         });
@@ -186,20 +198,25 @@ public class EditPage extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.crop:
                         sb_value.setVisibility(View.INVISIBLE);
+                        recyclerView.setVisibility(View.GONE);
                         startCropActivity();
                         return true;
 
                     case R.id.effects:
+                        recyclerView.setVisibility(View.VISIBLE);
+                        sb_value.setVisibility(View.INVISIBLE);
                         loadingStyles();
                         return true;
 
                     case R.id.exposure:
                         sb_value.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
                         changeBrightness();
                         return true;
 
                     case R.id.revert:
                         sb_value.setVisibility(View.INVISIBLE);
+                        recyclerView.setVisibility(View.GONE);
                         revertToOriginalPhoto();
                         return true;
                 }
@@ -252,7 +269,6 @@ public class EditPage extends AppCompatActivity {
         builder.setView(dialogView);
 
         btnGallery = dialogView.findViewById(R.id.btnGallery);
-        btnCamera = dialogView.findViewById(R.id.btnCamera);
 
         final AlertDialog alertDialog = builder.create();
         alertDialog.show();
@@ -267,29 +283,11 @@ public class EditPage extends AppCompatActivity {
             }
         });
 
-        btnCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkPermission(Manifest.permission.CAMERA,
-                        CAMERA_PERMISSION_CODE)) {
-                    takePictureFromCamera();
-                    alertDialog.cancel();
-                    imageView.setClickable(false);
-                }
-            }
-        });
     }
 
     private void takePictureFromGallery() {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(pickPhoto, 1);
-    }
-
-    private void takePictureFromCamera() {
-        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePicture.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePicture, 2);
-        }
     }
 
     private void openNewPicture() {
@@ -376,6 +374,8 @@ public class EditPage extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.v("request code", String.valueOf(requestCode));
+        Log.v("result code", String.valueOf(resultCode));
         switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
@@ -384,13 +384,6 @@ public class EditPage extends AppCompatActivity {
                     image = ImageHelper.loadSizeLimitedBitmapFromUri(data.getData(),
                             this.getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
                     imageView.setImageBitmap(image);
-                }
-                break;
-            case 2:
-                if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    Bitmap bitmapImage = (Bitmap) bundle.get("data");
-                    imageView.setImageBitmap(bitmapImage);
                 }
                 break;
         }
@@ -407,6 +400,7 @@ public class EditPage extends AppCompatActivity {
             }
         }
     }
+
 
     public void UploadBitmap(Activity activity, Bitmap bitmap, String serverFileName) {
 
@@ -436,8 +430,6 @@ public class EditPage extends AppCompatActivity {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
-
                         UploadTask uploadTask = fileRef.putBytes(data);
                         uploadTask.addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -479,22 +471,23 @@ public class EditPage extends AppCompatActivity {
                                 }
                             }
                         });
-
-
                     }
                 });
-
-
             }
         });
         thread.start();
     }
 
     private void loadingStyles() {
+        ProgressDialog loadingBar = new ProgressDialog(this);
+        loadingBar.setMessage("Please wait....");
+        loadingBar.setCanceledOnTouchOutside(false);
+        loadingBar.show();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Styles styles = deepArtEffectsClient.stylesGet();
+                loadingBar.dismiss();
                 final StyleAdapter styleAdapter = new StyleAdapter(
                         getApplicationContext(),
                         styles,
@@ -503,6 +496,7 @@ public class EditPage extends AppCompatActivity {
                             public void onClick(String styleId) {
                                 if (!isProcessing) {
                                     if (image != null) {
+                                        progressBar.setVisibility(View.VISIBLE);
                                         Log.d(TAG, String.format("Style with ID %s clicked.", styleId));
                                         isProcessing = true;
                                         uploadImage(styleId);
@@ -541,7 +535,8 @@ public class EditPage extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Glide.with(mActivity).load(result.getUrl()).centerCrop().into(imageView);
+                            Glide.with(mActivity).load(result.getUrl()).into(imageView);
+                            progressBar.setVisibility(View.GONE);
                         }
                     });
                     isProcessing = false;
@@ -552,7 +547,6 @@ public class EditPage extends AppCompatActivity {
             }
         }
     }
-
 
     private void uploadImage(final String styleId) {
         Log.d(TAG, String.format("Upload image with style id %s", styleId));
@@ -572,6 +566,49 @@ public class EditPage extends AppCompatActivity {
         }).start();
     }
 
+    public void putImage() {
+        Intent i = getIntent();
+        imageRecyclerView = i.getStringExtra("imageURL");
+        if (imageRecyclerView != null) {
+            new EditPage.DownloadImageTask(imageView).execute(imageRecyclerView);
+        }
+    }
+
+    public void getImages() {
+        BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
+        Bitmap bitmap = draw.getBitmap();
+        cropImage = getImageUri(getApplicationContext(), bitmap);
+        image = ImageHelper.loadSizeLimitedBitmapFromUri(cropImage,
+                getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
+    }
+
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+            getImages();
+        }
+    }
+
+
     private String convertBitmapToBase64(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -579,28 +616,21 @@ public class EditPage extends AppCompatActivity {
         return Base64.encodeToString(byteArray, 0);
     }
 
-
-    public boolean checkPermission(String permission, int requestCode) {
-        if (ContextCompat.checkSelfPermission(EditPage.this, permission) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(EditPage.this, new String[]{permission}, requestCode);
-        }
-        return false;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                Toast.makeText(EditPage.this, "Camera Permission Granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(EditPage.this, "Camera Permission Denied", Toast.LENGTH_SHORT).show();
-            }
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            Log.e("src", src);
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            Log.e("Bitmap", "returned");
+            return myBitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("Exception", e.getMessage());
+            return null;
         }
     }
 }
