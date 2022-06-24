@@ -30,6 +30,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -92,7 +94,7 @@ public class EditPage extends AppCompatActivity {
     Uri cropImage;
     ProgressBar progressBar;
     String imageRecyclerView;
-
+    TabLayout tabLayout;
 
     private static final String TAG = EditPage.class.getSimpleName();
 
@@ -111,6 +113,7 @@ public class EditPage extends AppCompatActivity {
 
     final int CAMERA_PERMISSION_CODE = 100;
 
+
     ProgressDialog progressDialog;
 
     @Override
@@ -128,6 +131,8 @@ public class EditPage extends AppCompatActivity {
 
         progressBar = findViewById(R.id.progress);
         progressBar.setVisibility(View.GONE);
+
+        tabLayout = findViewById(R.id.tabLayout);
 
         ApiClientFactory factory = new ApiClientFactory()
                 .apiKey(API_KEY)
@@ -175,6 +180,7 @@ public class EditPage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 sb_value.setVisibility(View.INVISIBLE);
+                tabLayout.setVisibility(View.INVISIBLE);
                 BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
                 Bitmap bitmap = draw.getBitmap();
                 UploadBitmap(EditPage.this, bitmap, UUID.randomUUID().toString());
@@ -190,6 +196,10 @@ public class EditPage extends AppCompatActivity {
         });
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.getMenu().getItem(0).setChecked(false);
+        bottomNavigationView.getMenu().getItem(1).setChecked(false);
+        bottomNavigationView.getMenu().getItem(2).setChecked(false);
+        bottomNavigationView.getMenu().getItem(3).setChecked(false);
         bottomNavigationView.getMenu().getItem(4).setChecked(false);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -199,26 +209,71 @@ public class EditPage extends AppCompatActivity {
                     case R.id.crop:
                         sb_value.setVisibility(View.INVISIBLE);
                         recyclerView.setVisibility(View.GONE);
+                        tabLayout.setVisibility(View.INVISIBLE);
                         startCropActivity();
                         return true;
-
                     case R.id.effects:
                         recyclerView.setVisibility(View.VISIBLE);
                         sb_value.setVisibility(View.INVISIBLE);
+                        tabLayout.setVisibility(View.INVISIBLE);
                         loadingStyles();
                         return true;
-
                     case R.id.exposure:
                         sb_value.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(View.GONE);
+                        tabLayout.setVisibility(View.INVISIBLE);
                         changeBrightness();
                         return true;
+                    case R.id.filters:
+                        sb_value.setVisibility(View.INVISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                        tabLayout.setVisibility(View.VISIBLE);
+                        // revertToOriginalPhoto();
+                        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                            @Override
+                            public void onTabSelected(TabLayout.Tab tab) {
+                                if (tab.getText().equals("BW")) {
+                                    imageView.setImageBitmap(setFiltru(image, 1));
+                                }
+                                if (tab.getText().equals("Sepia")) {
+                                    imageView.setImageBitmap(setFiltru(image, 2));
+                                }
+                                if (tab.getText().equals("Warm tones")) {
+                                    imageView.setImageBitmap(setFiltru(image, 3));
+                                }
+                                if (tab.getText().equals("Cold tones")) {
+                                    imageView.setImageBitmap(setFiltru(image, 4));
+                                }
+                                if (tab.getText().equals("Solarise")) {
+                                    imageView.setImageBitmap(setFiltru(image, 5));
+                                }
+                                if (tab.getText().equals("Invert")) {
+                                    imageView.setImageBitmap(setFiltru(image, 6));
+                                }
+                                if (tab.getText().equals("No Filter")) {
+                                    imageView.setImageBitmap(setFiltru(image, 7));
+                                }
+                            }
 
+                            @Override
+                            public void onTabUnselected(TabLayout.Tab tab) {
+                            }
+
+                            @Override
+                            public void onTabReselected(TabLayout.Tab tab) {
+                            }
+                        });
+                        if (image != null) {
+                            getImages();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Choose a photo first!", Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
                     case R.id.revert:
                         sb_value.setVisibility(View.INVISIBLE);
                         recyclerView.setVisibility(View.GONE);
+                        tabLayout.setVisibility(View.INVISIBLE);
                         revertToOriginalPhoto();
-                        return true;
                 }
                 return false;
             }
@@ -226,10 +281,22 @@ public class EditPage extends AppCompatActivity {
     }
 
     private void changeBrightness() {
+        BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
+        Bitmap bitmap = draw.getBitmap();
+        cropImage = getImageUri(getApplicationContext(), bitmap);
+        image = ImageHelper.loadSizeLimitedBitmapFromUri(cropImage,
+                this.getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
+
         sb_value.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                imageView.setColorFilter(setBrightness(progress));
+                if (progress >= 50) {
+                    int value = (int) (progress - 50) * 255 / 100;
+                    imageView.setImageBitmap(setBrightness(image, value));
+                } else {
+                    int value = (int) (50 - progress) * 255 / 100;
+                    imageView.setImageBitmap(setBrightness(image, -value));
+                }
             }
 
             @Override
@@ -242,17 +309,166 @@ public class EditPage extends AppCompatActivity {
 
             }
         });
+        BitmapDrawable draw1 = (BitmapDrawable) imageView.getDrawable();
+        Bitmap bitmap1 = draw1.getBitmap();
+        cropImage = getImageUri(getApplicationContext(), bitmap1);
+        image = ImageHelper.loadSizeLimitedBitmapFromUri(cropImage,
+                this.getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
     }
 
-    public static PorterDuffColorFilter setBrightness(int progress) {
-        if (progress >= 50) {
-            int value = (int) (progress - 50) * 255 / 100;
+    public Bitmap setBrightness(Bitmap src, int value) {
 
-            return new PorterDuffColorFilter(Color.argb(value, 255, 255, 255), PorterDuff.Mode.SRC_OVER);
-        } else {
-            int value = (int) (50 - progress) * 255 / 100;
-            return new PorterDuffColorFilter(Color.argb(value, 0, 0, 0), PorterDuff.Mode.SRC_ATOP);
+        int width = src.getWidth();
+        int height = src.getHeight();
+
+        Bitmap bmOut = Bitmap.createBitmap(width, height, src.getConfig());
+
+        int A, R, G, B;
+        int pixel;
+
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+
+                pixel = src.getPixel(x, y);
+                A = Color.alpha(pixel);
+                R = Color.red(pixel);
+                G = Color.green(pixel);
+                B = Color.blue(pixel);
+
+                R += value;
+                if (R > 255) {
+                    R = 255;
+                } else if (R < 0) {
+                    R = 0;
+                }
+
+                G += value;
+                if (G > 255) {
+                    G = 255;
+                } else if (G < 0) {
+                    G = 0;
+                }
+
+                B += value;
+                if (B > 255) {
+                    B = 255;
+                } else if (B < 0) {
+                    B = 0;
+                }
+
+                bmOut.setPixel(x, y, Color.argb(A, R, G, B));
+            }
         }
+
+        return bmOut;
+    }
+
+    public Bitmap setFiltru(Bitmap src, int value) {
+
+        int width = src.getWidth();
+        int height = src.getHeight();
+
+        Bitmap bmOut = Bitmap.createBitmap(width, height, src.getConfig());
+
+        int A, R, G, B;
+        int Ai, Ri, Gi, Bi;
+        int pixel;
+        int r1, g1, b1;
+
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+
+                pixel = src.getPixel(x, y);
+                A = Color.alpha(pixel);
+                R = Color.red(pixel);
+                G = Color.green(pixel);
+                B = Color.blue(pixel);
+
+                Ai = Color.alpha(pixel);
+                Ri = Color.red(pixel);
+                Gi = Color.green(pixel);
+                Bi = Color.blue(pixel);
+
+                if (value == 1) {
+                    int media = (R + G + B) / 3;
+
+                    R = media;
+                    G = media;
+                    B = media;
+                }
+                if (value == 2) {
+                    double tR = 0.393 * R + 0.769 * G + 0.189 * B;
+                    double tG = (int) (0.349 * R + 0.686 * G + 0.168 * B);
+                    double tB = (int) (0.272 * R + 0.534 * G + 0.131 * B);
+
+                    if (tR > 255) {
+                        R = 255;
+                    } else {
+                        R = (int) Math.round(tR);
+                    }
+
+                    if (tG > 255) {
+                        G = 255;
+                    } else {
+                        G = (int) Math.round(tG);
+                    }
+
+                    if (tB > 255) {
+                        B = 255;
+                    } else {
+                        B = (int) Math.round(tB);
+                    }
+                }
+                if (value == 3) {
+                    if (R < 245) {
+                        R = R + 8;
+                    }
+                }
+                if (value == 4) {
+                    if (B < 245) {
+                        B = B + 8;
+                        G = G + 5;
+                    }
+                }
+                if (value == 5) {
+                    if (R < 128) {
+                        r1 = 255 - R;
+                    } else {
+                        r1 = R;
+                    }
+                    if (G < 128) {
+                        g1 = 255 - G;
+                    } else {
+                        g1 = G;
+                    }
+                    if (B < 128) {
+                        b1 = 255 - B;
+                    } else {
+                        b1 = B;
+                    }
+
+                    R = r1;
+                    B = b1;
+                    G = g1;
+                }
+                if (value == 6) {
+                    R = 255 - R;
+                    G = 255 - G;
+                    B = 255 - B;
+                }
+
+                if (value == 7) {
+                    A = Ai;
+                    B = Bi;
+                    R = Ri;
+                    G = Gi;
+                }
+
+                bmOut.setPixel(x, y, Color.argb(A, R, G, B));
+            }
+        }
+
+        return bmOut;
     }
 
     @Override
@@ -282,7 +498,6 @@ public class EditPage extends AppCompatActivity {
                 alertDialog.cancel();
             }
         });
-
     }
 
     private void takePictureFromGallery() {
@@ -580,11 +795,14 @@ public class EditPage extends AppCompatActivity {
         cropImage = getImageUri(getApplicationContext(), bitmap);
         image = ImageHelper.loadSizeLimitedBitmapFromUri(cropImage,
                 getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
+        imageOriginal = ImageHelper.loadSizeLimitedBitmapFromUri(cropImage,
+                this.getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
     }
 
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
+
         public DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
@@ -608,29 +826,10 @@ public class EditPage extends AppCompatActivity {
         }
     }
 
-
     private String convertBitmapToBase64(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         return Base64.encodeToString(byteArray, 0);
-    }
-
-    public static Bitmap getBitmapFromURL(String src) {
-        try {
-            Log.e("src", src);
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            Log.e("Bitmap", "returned");
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("Exception", e.getMessage());
-            return null;
-        }
     }
 }
