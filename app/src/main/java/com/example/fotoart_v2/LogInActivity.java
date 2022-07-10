@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -92,7 +93,8 @@ public class LogInActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         Intent i = new Intent(LogInActivity.this, EditPage.class);
-                        startActivity(i);
+                        Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(LogInActivity.this).toBundle();
+                        startActivity(i, bundle);
                     } else {
                         Toast.makeText(LogInActivity.this, "Log in failed!", Toast.LENGTH_SHORT).show();
                     }

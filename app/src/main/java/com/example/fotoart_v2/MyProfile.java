@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -69,7 +70,8 @@ public class MyProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MyProfile.this, MyPhotos.class);
-                startActivity(i);
+                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MyProfile.this).toBundle();
+                startActivity(i, bundle);
             }
         });
 
@@ -111,7 +113,8 @@ public class MyProfile extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (firebaseAuth.getCurrentUser() == null) {
                     Intent i = new Intent(MyProfile.this, LogInActivity.class);
-                    startActivity(i);
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MyProfile.this).toBundle();
+                    startActivity(i, bundle);
                 } else {
                 }
             }

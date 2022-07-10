@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -36,10 +37,12 @@ public class MyPhotos extends AppCompatActivity {
     private boolean isProcessing = false;
     String deletedURL = null;
     PhotoAdapter.ClickListener clickListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_photos_activity);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         imagelist = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
@@ -85,10 +88,11 @@ public class MyPhotos extends AppCompatActivity {
                                             public void onClick(View v) {
                                                 isProcessing = true;
                                                 Intent intent = new Intent(getApplicationContext(), EditPage.class);
+                                                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MyPhotos.this).toBundle();
                                                 intent.putExtra("imageURL", url);
                                                 Log.v("URL", url);
                                                 alertDialog.cancel();
-                                                startActivity(intent);
+                                                startActivity(intent, bundle);
                                                 finish();
                                             }
                                         });
@@ -125,5 +129,11 @@ public class MyPhotos extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 }

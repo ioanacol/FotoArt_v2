@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -98,9 +99,9 @@ public class EditPage extends AppCompatActivity {
 
     private static final String TAG = EditPage.class.getSimpleName();
 
-    private static final String API_KEY = "hjq6UT28O07X17sfDAp6p4wplHFcKPin1EFyew4p";
-    private static final String ACCESS_KEY = "AKIA3XE3HF7SVYZTRKLQ";
-    private static final String SECRET_KEY = "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";
+    private static final String API_KEY = "1Qi7C3CXx06nrDkM7PqKPaPLuveFkRaWZhD7lrHc";
+    private static final String ACCESS_KEY = "AKIA3XE3HF7SQQUCVZN3";
+    private static final String SECRET_KEY = "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";
 
     private static final int CHECK_RESULT_INTERVAL_IN_MS = 2500;
     private static final int IMAGE_MAX_SIDE_LENGTH = 768;
@@ -191,7 +192,8 @@ public class EditPage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(EditPage.this, MyProfile.class);
-                startActivity(i);
+                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(EditPage.this).toBundle();
+                startActivity(i, bundle);
             }
         });
 
@@ -676,7 +678,8 @@ public class EditPage extends AppCompatActivity {
                                     String stringUrl = downloadUri.toString();
                                     Intent intent = new Intent(getApplicationContext(), SaveActivity.class);
                                     intent.putExtra("imageURL", stringUrl);
-                                    startActivity(intent);
+                                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(EditPage.this).toBundle();
+                                    startActivity(intent, bundle);
                                     progressDialog.dismiss();
                                     finish();
 
