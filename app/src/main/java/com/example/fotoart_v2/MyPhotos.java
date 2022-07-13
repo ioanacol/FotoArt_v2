@@ -100,21 +100,29 @@ public class MyPhotos extends AppCompatActivity {
                                         btnDelete.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
-                                                FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
-                                                StorageReference storageReference = firebaseStorage.getReferenceFromUrl(url);
-                                                storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        Log.e("Picture ", "#deleted");
-                                                    }
-                                                });
+//                                                FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+//                                                StorageReference storageReference = firebaseStorage.getReferenceFromUrl(url);
+//                                                storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                                    @Override
+//                                                    public void onSuccess(Void aVoid) {
+//                                                        Log.e("Picture ", "#deleted");
+//                                                    }
+//                                                });
+//
+//                                                imagelist.remove(url);
+//                                                alertDialog.cancel();
+//                                                finish();
+//                                                overridePendingTransition(0, 0);
+//                                                startActivity(getIntent());
+//                                                overridePendingTransition(0, 0);
 
-                                                imagelist.remove(url);
+                                                isProcessing = true;
+                                                Intent intent = new Intent(getApplicationContext(), ViewPhoto.class);
+                                                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MyPhotos.this).toBundle();
+                                                intent.putExtra("imageURL2", url);
                                                 alertDialog.cancel();
+                                                startActivity(intent, bundle);
                                                 finish();
-                                                overridePendingTransition(0, 0);
-                                                startActivity(getIntent());
-                                                overridePendingTransition(0, 0);
                                             }
                                         });
                                     }
@@ -122,7 +130,6 @@ public class MyPhotos extends AppCompatActivity {
                             };
                             final PhotoAdapter adapter = new PhotoAdapter(imagelist, getApplicationContext(), clickListener);
                             recyclerView.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
                         }
                     });
                 }

@@ -83,6 +83,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 public class EditPage extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
@@ -176,6 +178,10 @@ public class EditPage extends AppCompatActivity {
         });
 
         putImage();
+
+        PhotoViewAttacher pAttacher;
+        pAttacher = new PhotoViewAttacher(imageView);
+        pAttacher.update();
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -803,7 +809,7 @@ public class EditPage extends AppCompatActivity {
     }
 
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+     class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
         public DownloadImageTask(ImageView bmImage) {

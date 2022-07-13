@@ -54,4 +54,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation "commons-logging:commons-logging-api:1.1"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.commit451:PhotoView:1.2.4'
 }

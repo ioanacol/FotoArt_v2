@@ -42,7 +42,7 @@
         android:layout_weight="1"
         android:clickable="true"
         android:fontFamily="@font/old_standard_tt"
-        android:text="Delete"
+        android:text="View"
         android:textColor="#ce7c30"
         android:textSize="16sp">
 
