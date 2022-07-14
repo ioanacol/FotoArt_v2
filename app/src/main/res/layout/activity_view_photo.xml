@@ -4,30 +4,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ViewPhoto">
+    tools:context=".ViewPhoto"
+    android:background="@drawable/fundal_login">
 
-    <ImageView
-        android:id="@+id/fundal"
-        android:layout_width="wrap_content"
-        android:layout_height="900dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/fundal_login"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.136" />
 
     <ImageView
         android:id="@+id/viewImage"
-        android:layout_width="357dp"
-        android:layout_height="523dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:foregroundGravity="center"
+        android:layout_centerInParent="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    </ImageView>
+
+    <ProgressBar
+        android:id="@+id/progress2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="332dp"
+        android:indeterminate="true"
+        android:indeterminateTint="#ce7c30"
+        android:progressTint="#ce7c30"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnSaveGallery2"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:background="#ce7c30"
+        android:fontFamily="@font/old_standard_tt"
+        android:text="Save to gallery"
+        android:textColor="#090d01"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/white" />
+        app:layout_constraintVertical_bias="0.958" />
 
+    <Button
+        android:id="@+id/btnShare"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:background="#ce7c30"
+        android:fontFamily="@font/old_standard_tt"
+        android:text="Share"
+        android:textColor="#090d01"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.876" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

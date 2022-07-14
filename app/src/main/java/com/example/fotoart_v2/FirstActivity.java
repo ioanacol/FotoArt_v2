@@ -1,13 +1,13 @@
 package com.example.fotoart_v2;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,7 +34,7 @@ public class FirstActivity extends AppCompatActivity {
             @Override
             public void run() {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if(user == null){
+                if (user == null) {
                     Intent i = new Intent(FirstActivity.this, LogInActivity.class);
                     startActivity(i);
                     finish();

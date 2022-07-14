@@ -14,27 +14,9 @@ import com.deeparteffects.sdk.android.model.Styles;
 
 public class StyleAdapter extends RecyclerView.Adapter<StyleAdapter.ViewHolder> {
 
-    private Context mContext;
-    private Styles mStyles;
-    private ClickListener mClickListener;
-
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView styleImage;
-
-        ViewHolder(View view) {
-            super(view);
-            styleImage = view.findViewById(R.id.styleImage);
-            view.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (styleImage == null) {
-                return;
-            }
-            mClickListener.onClick(mStyles.get(getAdapterPosition()).getId());
-        }
-    }
+    private final Context mContext;
+    private final Styles mStyles;
+    private final ClickListener mClickListener;
 
     StyleAdapter(Context context, Styles styles, ClickListener clickListener) {
         mContext = context;
@@ -64,5 +46,23 @@ public class StyleAdapter extends RecyclerView.Adapter<StyleAdapter.ViewHolder> 
 
     public interface ClickListener {
         void onClick(String styleId);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        ImageView styleImage;
+
+        ViewHolder(View view) {
+            super(view);
+            styleImage = view.findViewById(R.id.styleImage);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (styleImage == null) {
+                return;
+            }
+            mClickListener.onClick(mStyles.get(getAdapterPosition()).getId());
+        }
     }
 }

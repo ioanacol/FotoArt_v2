@@ -1,29 +1,20 @@
 package com.example.fotoart_v2;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -48,7 +39,7 @@ public class SignUpActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
 
-        btnSignUp=findViewById(R.id.btnSignUp);
+        btnSignUp = findViewById(R.id.btnSignUp);
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,7 +52,7 @@ public class SignUpActivity extends AppCompatActivity {
                     mAuth.createUserWithEmailAndPassword(u.getEmail(), u.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 Toast.makeText(SignUpActivity.this, "Registered successfully!", Toast.LENGTH_SHORT).show();
                                 Bundle bundle = new Bundle();
                                 bundle.putParcelable("OK", u);
@@ -85,20 +76,20 @@ public class SignUpActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
-    private Boolean isValid(){
-        if(firstName.getText().toString().isEmpty()){
+    private Boolean isValid() {
+        if (firstName.getText().toString().isEmpty()) {
             firstName.setError("Invalid!");
             return false;
         }
-        if(lastName.getText().toString().isEmpty()){
+        if (lastName.getText().toString().isEmpty()) {
             lastName.setError("Invalid!");
             return false;
         }
-        if(email.getText().toString().isEmpty() || !email.getText().toString().matches(emailPattern)) {
+        if (email.getText().toString().isEmpty() || !email.getText().toString().matches(emailPattern)) {
             email.setError("Invalid!");
             return false;
         }
-        if(password.getText().toString().isEmpty() || password.getText().toString().length() < 6){
+        if (password.getText().toString().isEmpty() || password.getText().toString().length() < 6) {
             password.setError("Password too short!");
             return false;
         }

@@ -10,14 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.deeparteffects.sdk.android.model.Styles;
 
 import java.util.ArrayList;
 
-public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder>{
-    private ArrayList<String> imageList;
-    private PhotoAdapter.ClickListener mClickListener;
-    private Context context;
+public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> {
+    private final ArrayList<String> imageList;
+    private final PhotoAdapter.ClickListener mClickListener;
+    private final Context context;
 
     public PhotoAdapter(ArrayList<String> imageList, Context context, PhotoAdapter.ClickListener clickListener) {
         this.imageList = imageList;
@@ -28,7 +27,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder>{
     @NonNull
     @Override
     public PhotoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_photo,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_photo, parent, false);
         return new ViewHolder(view);
     }
 
@@ -44,11 +43,21 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder>{
         return imageList.size();
     }
 
+    public void removeItem(String item) {
+        this.imageList.remove(item);
+        notifyDataSetChanged();
+    }
+
+    public interface ClickListener {
+        void onClick(String url);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView imageView;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView=itemView.findViewById(R.id.photo);
+            imageView = itemView.findViewById(R.id.photo);
             itemView.setOnClickListener(this);
         }
 
@@ -56,14 +65,5 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder>{
         public void onClick(View v) {
             mClickListener.onClick(imageList.get(getBindingAdapterPosition()));
         }
-    }
-
-    public void removeItem(String item){
-        this.imageList.remove(item);
-        notifyDataSetChanged();
-    }
-
-    public interface ClickListener {
-        void onClick(String url);
     }
 }

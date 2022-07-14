@@ -1,10 +1,5 @@
 package com.example.fotoart_v2;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,25 +17,28 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
 
 public class SaveActivity extends AppCompatActivity {
 
-    ImageView imageView;
-    Button btnSaveGallery, btnDone, btnBack;
     final int STORAGE_PERMISSION_CODE = 101;
+    ImageView imageView;
+    Button btnSaveGallery, btnDone, btnBack, btnShare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.save_activity);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 
         Bundle bundle = getIntent().getExtras();
         String imageURl = bundle.getString("imageURL");
@@ -100,14 +98,72 @@ public class SaveActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i =new Intent(SaveActivity.this, EditPage.class);
+                Intent i = new Intent(SaveActivity.this, EditPage.class);
                 startActivity(i, bundle);
+            }
+        });
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        
+        btnShare = findViewById(R.id.btnShareFinal);
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
+                Bitmap bitmap = draw.getBitmap();
+                FileOutputStream outStream = null;
+                File sdCard = Environment.getExternalStorageDirectory();
+                File dir = new File(sdCard.getAbsolutePath() + "/FotoArt");
+                dir.mkdirs();
+                String fileName = String.format("%d.jpg", System.currentTimeMillis());
+                File outFile = new File(dir, fileName);
+                try {
+                    outStream = new FileOutputStream(outFile);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+                try {
+                    outStream.flush();
+                    outStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Intent share = new Intent(Intent.ACTION_SEND);
+                share.setType("image/*");
+                share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(outFile));
+                startActivity(Intent.createChooser(share,"Share via"));
             }
         });
     }
 
+    public boolean checkPermission(String permission, int requestCode) {
+        if (ContextCompat.checkSelfPermission(SaveActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(SaveActivity.this, new String[]{permission}, requestCode);
+        }
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(SaveActivity.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(SaveActivity.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
+
         public DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
@@ -130,29 +186,9 @@ public class SaveActivity extends AppCompatActivity {
         }
     }
 
-
-    public boolean checkPermission(String permission, int requestCode)
-    {
-        if (ContextCompat.checkSelfPermission(SaveActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(SaveActivity.this, new String[] { permission }, requestCode);
-        }
-        return false;
-    }
-
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults)
-    {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == STORAGE_PERMISSION_CODE) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(SaveActivity.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Toast.makeText(SaveActivity.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-        }
+    protected void onResume() {
+        super.onResume();
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 }

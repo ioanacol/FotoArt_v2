@@ -2,37 +2,19 @@ package com.example.fotoart_v2;
 
 import static com.amazonaws.regions.Regions.EU_WEST_1;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -41,25 +23,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.mobileconnectors.apigateway.ApiClientFactory;
 import com.bumptech.glide.Glide;
 import com.deeparteffects.sdk.android.DeepArtEffectsClient;
 import com.deeparteffects.sdk.android.model.Result;
 import com.deeparteffects.sdk.android.model.Styles;
 import com.deeparteffects.sdk.android.model.UploadRequest;
 import com.deeparteffects.sdk.android.model.UploadResponse;
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.mobileconnectors.apigateway.ApiClientFactory;
-import com.deeparteffects.sdk.android.DeepArtEffectsClient;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -67,26 +51,28 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
+// import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class EditPage extends AppCompatActivity {
 
+    private static final String TAG = EditPage.class.getSimpleName();
+    private static final String API_KEY = "Q78bXmOor21R5ypzbPJrv70slxqvRgM599DRUOJb";
+    private static final String ACCESS_KEY = "AKIA3XE3HF7SYVBRYFQF";
+    private static final String SECRET_KEY = "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";
+    private static final int CHECK_RESULT_INTERVAL_IN_MS = 2500;
+    private static final int IMAGE_MAX_SIDE_LENGTH = 768;
+    final int CAMERA_PERMISSION_CODE = 100;
     BottomNavigationView bottomNavigationView;
     ImageView imageView;
     Button btnGallery;
@@ -98,26 +84,11 @@ public class EditPage extends AppCompatActivity {
     ProgressBar progressBar;
     String imageRecyclerView;
     TabLayout tabLayout;
-
-    private static final String TAG = EditPage.class.getSimpleName();
-
-    private static final String API_KEY = "1Qi7C3CXx06nrDkM7PqKPaPLuveFkRaWZhD7lrHc";
-    private static final String ACCESS_KEY = "AKIA3XE3HF7SQQUCVZN3";
-    private static final String SECRET_KEY = "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";
-
-    private static final int CHECK_RESULT_INTERVAL_IN_MS = 2500;
-    private static final int IMAGE_MAX_SIDE_LENGTH = 768;
-
+    ProgressDialog progressDialog;
     private AppCompatActivity mActivity;
     private boolean isProcessing = false;
-
     private RecyclerView recyclerView;
     private DeepArtEffectsClient deepArtEffectsClient;
-
-    final int CAMERA_PERMISSION_CODE = 100;
-
-
-    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,19 +149,24 @@ public class EditPage extends AppCompatActivity {
         });
 
         putImage();
-
-        PhotoViewAttacher pAttacher;
-        pAttacher = new PhotoViewAttacher(imageView);
-        pAttacher.update();
+//
+//        PhotoViewAttacher pAttacher;
+//        pAttacher = new PhotoViewAttacher(imageView);
+//        pAttacher.update();
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sb_value.setVisibility(View.INVISIBLE);
                 tabLayout.setVisibility(View.INVISIBLE);
-                BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
-                Bitmap bitmap = draw.getBitmap();
-                UploadBitmap(EditPage.this, bitmap, UUID.randomUUID().toString());
+                if(image != null) {
+                    BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
+                    Bitmap bitmap = draw.getBitmap();
+                    UploadBitmap(EditPage.this, bitmap, UUID.randomUUID().toString());
+                }
+                else{
+                    Toast.makeText(EditPage.this, "Edit a photo before saving!", Toast.LENGTH_SHORT);
+                }
             }
         });
 
@@ -236,7 +212,6 @@ public class EditPage extends AppCompatActivity {
                         sb_value.setVisibility(View.INVISIBLE);
                         recyclerView.setVisibility(View.GONE);
                         tabLayout.setVisibility(View.VISIBLE);
-                        // revertToOriginalPhoto();
                         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                             @Override
                             public void onTabSelected(TabLayout.Tab tab) {
@@ -742,36 +717,6 @@ public class EditPage extends AppCompatActivity {
         }).start();
     }
 
-    private class ImageReadyCheckTimer extends TimerTask {
-
-        private final String mSubmissionId;
-
-        ImageReadyCheckTimer(String submissionId) {
-            mSubmissionId = String.valueOf(submissionId);
-        }
-
-        public void run() {
-            try {
-                final Result result = deepArtEffectsClient.resultGet(mSubmissionId);
-                String submissionStatus = result.getStatus();
-                Log.d(TAG, String.format("Submission status is %s", submissionStatus));
-                if (submissionStatus.equals(SubmissionStatus.FINISHED)) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Glide.with(mActivity).load(result.getUrl()).into(imageView);
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    });
-                    isProcessing = false;
-                    cancel();
-                }
-            } catch (Exception e) {
-                cancel();
-            }
-        }
-    }
-
     private void uploadImage(final String styleId) {
         Log.d(TAG, String.format("Upload image with style id %s", styleId));
         new Thread(new Runnable() {
@@ -808,8 +753,43 @@ public class EditPage extends AppCompatActivity {
                 this.getContentResolver(), IMAGE_MAX_SIDE_LENGTH);
     }
 
+    private String convertBitmapToBase64(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        return Base64.encodeToString(byteArray, 0);
+    }
 
-     class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+    private class ImageReadyCheckTimer extends TimerTask {
+        private final String mSubmissionId;
+
+        ImageReadyCheckTimer(String submissionId) {
+            mSubmissionId = String.valueOf(submissionId);
+        }
+
+        public void run() {
+            try {
+                final Result result = deepArtEffectsClient.resultGet(mSubmissionId);
+                String submissionStatus = result.getStatus();
+                Log.d(TAG, String.format("Submission status is %s", submissionStatus));
+                if (submissionStatus.equals(SubmissionStatus.FINISHED)) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(mActivity).load(result.getUrl()).into(imageView);
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    });
+                    isProcessing = false;
+                    cancel();
+                }
+            } catch (Exception e) {
+                cancel();
+            }
+        }
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
         public DownloadImageTask(ImageView bmImage) {
@@ -833,12 +813,5 @@ public class EditPage extends AppCompatActivity {
             bmImage.setImageBitmap(result);
             getImages();
         }
-    }
-
-    private String convertBitmapToBase64(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-        return Base64.encodeToString(byteArray, 0);
     }
 }

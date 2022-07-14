@@ -9,6 +9,17 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "User")
 public class User implements Parcelable {
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "first_name")
@@ -36,18 +47,6 @@ public class User implements Parcelable {
         email = in.readString();
         password = in.readString();
     }
-
-    public static final Creator<User> CREATOR = new Creator<User>() {
-        @Override
-        public User createFromParcel(Parcel in) {
-            return new User(in);
-        }
-
-        @Override
-        public User[] newArray(int size) {
-            return new User[size];
-        }
-    };
 
     public int getId() {
         return id;
