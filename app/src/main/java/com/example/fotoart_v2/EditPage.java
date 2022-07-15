@@ -165,7 +165,7 @@ public class EditPage extends AppCompatActivity {
                     UploadBitmap(EditPage.this, bitmap, UUID.randomUUID().toString());
                 }
                 else{
-                    Toast.makeText(EditPage.this, "Edit a photo before saving!", Toast.LENGTH_SHORT);
+                    Toast.makeText(EditPage.this, "Edit a photo before saving!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -206,7 +206,11 @@ public class EditPage extends AppCompatActivity {
                         sb_value.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(View.GONE);
                         tabLayout.setVisibility(View.INVISIBLE);
-                        changeBrightness();
+                        if(image!=null) {
+                            changeBrightness();
+                        } else {
+                            Toast.makeText(EditPage.this, "Choose a photo first!", Toast.LENGTH_SHORT).show();
+                        }
                         return true;
                     case R.id.filters:
                         sb_value.setVisibility(View.INVISIBLE);
